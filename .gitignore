@@ -1,2 +1,12 @@
 result
 public/
+
+# Generated sources
+content/posts/2017-05-08-merging.md
+content/posts/2017-05-13-pijul.md
+content/posts/2019-02-19-cycles.md
+content/posts/2019-02-25-ids.md
+content/posts/2019-05-07-pseudo.md
+content/images
+
+themes/
