@@ -31,7 +31,7 @@ to think about. From smallest to biggest, we have:
 The first obvious requirement is that the size of a patch should be
 proportional to the size of the change. This sounds almost too obvious to
 mention, but remember the definition of a patch from
-[here]({{ site.baseurl }}{% post_url 2017-05-08-merging %}#graggles): a
+[here](@/2017-05-08-merging/index.md#graggles): a
 patch consists of a source file, a target file, and a function from one to the
 other that has certain additional properties. If we were to naively translate
 this definition into code, the size of a patch would be proportional to the
@@ -39,7 +39,7 @@ size of the entire file.
 
 Of course, this is a solved problem in the world of UNIX-style diffs (which I
 mentioned all the way back in the
-[first post]({{ site.baseurl }}{% post_url 2017-05-08-merging %})).
+[first post](@/2017-05-08-merging/index.md)).
 The problem is to adapt the diff approach to our mathematical patch framework;
 for example, the fact that our files need not even be ordered means that it
 doesn't make sense to talk about inserting a line "after line 62."
@@ -118,7 +118,7 @@ Now look in `out.txt` to see your `NewNode`s and `NewEdge`s in all their glory.
 
 I introduced unique IDs as a way to achieve compact representations of patches,
 but it turns out that they also solve a problem that I promised to explain
-[two years ago]({{ site.baseurl }}{% post_url 2017-05-13-pijul %}):
+[two years ago](@/2017-05-13-pijul/index.md):
 how do I compute the "most antique"
 version of a patch? Or equivalently, if I have some patch but I want to apply
 it to a slightly different repository, how do I know whether I can do that?

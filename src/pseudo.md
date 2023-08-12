@@ -5,12 +5,12 @@ title: "Part 5: Pseudo-edges"
 
 This is the fifth (and final planned) post in a series on some new ideas
 in version control. To start at the beginning,
-[go here]({{ site.baseurl }}{% post_url 2017-05-08-merging %}).
+[go here](@/2017-05-08-merging/index.md).
 
 The goal of this post is to describe pseudo-edges: what they are, how to
 compute them efficiently, and how to update them efficiently upon small
 changes. To recall the important points from the
-[last post]({{ site.baseurl }}{% post_url 2019-02-25-ids %}):
+[last post](@/2019-02-25-ids/index.md):
 
 - We (pretend, for now, that we) represent the state of the repository as a
   graph in memory: one node for every line, with a directed edges that enforce

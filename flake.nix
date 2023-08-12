@@ -3,16 +3,16 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    deepthought = { url = "github:RatanShreshtha/DeepThought"; flake = false; };
+    abridge = { url = "github:jieiku/abridge"; flake = false; };
   };
 
-  outputs = { self, nixpkgs, flake-utils, deepthought }:
+  outputs = { self, nixpkgs, flake-utils, abridge }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         version = "2023-08-08";
         pkgs = import nixpkgs { inherit system; };
 
-        themeName = ((builtins.fromTOML (builtins.readFile "${deepthought}/theme.toml")).name);
+        themeName = ((builtins.fromTOML (builtins.readFile "${abridge}/theme.toml")).name);
 
         tikzifyDeps = with pkgs; [
           pdf2svg
@@ -21,11 +21,11 @@
         ];
 
         generatedPosts = [
-          { infile = ./src/merge.md; outfile = "2017-05-08-merging.md"; }
-          { infile = ./src/pijul.md; outfile = "2017-05-13-pijul.md"; }
-          { infile = ./src/cycles.md; outfile = "2019-02-19-cycles.md"; }
-          { infile = ./src/ids.md; outfile = "2019-02-25-ids.md"; }
-          { infile = ./src/pseudo.md; outfile = "2019-05-07-pseudo.md"; }
+          { infile = ./src/merge.md; outfile = "2017-05-08-merging"; }
+          { infile = ./src/pijul.md; outfile = "2017-05-13-pijul"; }
+          { infile = ./src/cycles.md; outfile = "2019-02-19-cycles"; }
+          { infile = ./src/ids.md; outfile = "2019-02-25-ids"; }
+          { infile = ./src/pseudo.md; outfile = "2019-05-07-pseudo"; }
         ];
 
         generateTikzPost = {infile, outfile}: pkgs.stdenv.mkDerivation {
@@ -33,12 +33,13 @@
           inherit version;
           src = ./src;
           nativeBuildInputs = tikzifyDeps;
-          buildPhase = "python tikzify.py ${infile} ${outfile}";
+          buildPhase = ''
+            mkdir -m 0755 -p ${outfile}
+            python tikzify.py ${infile} ${outfile}
+            '';
           installPhase = ''
-            mkdir -p $out/content/posts
-            mkdir -p $out/content/images
-            cp images/* $out/content/images/
-            cp ${outfile} $out/content/posts/
+            mkdir -p $out/content
+            cp -rL ${outfile} $out/content/
           '';
         };
 
@@ -49,7 +50,8 @@
 
         generateLocal = pkgs.writeShellScriptBin "generate-local" ''
           nix build .#generatedPosts
-          cp -ra result/content/* content/
+          cp -rL result/content/* content/
+          chmod -R u+w content/
         '';
       in
       {
@@ -63,7 +65,7 @@
             mkdir -p templates
             mkdir -p static
             mkdir -p sass
-            cp -r ${deepthought}/* "themes/${themeName}"
+            cp -r ${abridge}/* "themes/${themeName}"
             cp -r ${generateTikzPosts}/* .
           '';
           buildPhase = "zola build";

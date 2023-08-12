@@ -1,18 +1,18 @@
 {
   "nodes": {
-    "deepthought": {
+    "abridge": {
       "flake": false,
       "locked": {
-        "lastModified": 1681035730,
-        "narHash": "sha256-dzhfGmhuNCbloqknM7lVnFbNYmf2/ue7az6DQok44yM=",
-        "owner": "RatanShreshtha",
-        "repo": "DeepThought",
-        "rev": "430c1d5085dd6bea4cd6bd2d55003db67ba6bea0",
+        "lastModified": 1691632289,
+        "narHash": "sha256-fUNwq/p6xVSBf4oczXgXIp7eEx1UsKmY3YC9fjAHd9I=",
+        "owner": "jieiku",
+        "repo": "abridge",
+        "rev": "d2aba91ac9f5ab6a6f88b125da80b8f8275138d3",
         "type": "github"
       },
       "original": {
-        "owner": "RatanShreshtha",
-        "repo": "DeepThought",
+        "owner": "jieiku",
+        "repo": "abridge",
         "type": "github"
       }
     },
@@ -49,7 +49,7 @@
     },
     "root": {
       "inputs": {
-        "deepthought": "deepthought",
+        "abridge": "abridge",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }

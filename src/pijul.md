@@ -3,7 +3,7 @@ layout: post
 title: "Part 2: Merging, patches, and pijul"
 ---
 
-In the [last post]({{ site.baseurl }}{% post_url 2017-05-08-merging %}),
+In the [last post](@/2017-05-08-merging/index.md),
 I talked about a mathematical
 framework for a version control system (VCS) without merge conflicts. In this
 post I'll explore [pijul](pijul.com), which is a VCS based on a similar system.

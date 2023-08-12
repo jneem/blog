@@ -170,9 +170,10 @@ def tex_it(in_lines, out_name):
             pdf_name = os.path.join(working_dir, os.path.basename(tex_file.name)[:-4] + '.pdf')
             subprocess.run(['pdf2svg', pdf_name, out_name])
 
-def process_md(in_name, out_name):
+def process_md(in_name, out_path):
     old_hashes = {}
     hashes = {}
+    out_name = '{}/index.md'.format(out_path)
     try:
         with open(out_name + '.pickle', 'rb') as pickle_file:
             old_hashes = pickle.load(pickle_file)
@@ -193,7 +194,8 @@ def process_md(in_name, out_name):
             hasher = hashlib.sha256()
             for line in in_file.readlines():
                 if in_tikz_block and line.startswith('```'):
-                    svg_name = 'images/{}_tikz_block_{}.svg'.format(basename, cur_block_num)
+                    svg_basename = '{}_tikz_block_{}.svg'.format(basename, cur_block_num)
+                    svg_name = '{}/{}'.format(out_path, svg_basename)
                     if not os.path.isfile(svg_name) or old_hashes.get(svg_name) != hasher.hexdigest():
                         tex_it(cur_lines, svg_name)
                     else:
@@ -203,7 +205,7 @@ def process_md(in_name, out_name):
                     cur_block_num += 1
                     hashes[svg_name] = hasher.hexdigest()
                     cur_lines.clear()
-                    print('![]({})'.format(svg_name), file=out_file)
+                    print('![]({})'.format(svg_basename), file=out_file)
                 elif not in_tikz_block and line.startswith('```tikz'):
                     in_tikz_block = True
                     hasher = hashlib.sha256()
