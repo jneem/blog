@@ -73,6 +73,7 @@ foothr = true # show or hide horizontal rule above footer
 menu = [
     {url = "/about/", name = "About", slash = true, blank = false},
     {url = "/", name = "Posts", slash = true, blank = false},
+    {url = "/math/", name = "Math", slash = true, blank = false},
     #{url = "/categories/", name = "Categories", slash = true, blank = false},
     #{url = "/tags/", name = "Tags", slash = true, blank = false},
 ]
@@ -138,8 +139,8 @@ favicon_webmanifest = "site.webmanifest" # Used for android-chrome-512x512.png a
 favicon_mask = "safari-pinned-tab.svg" # safari-pinned-tab.svg
 favicon_mask_color = "#ff9900"
 favicon180 = "apple-touch-icon.png" # apple-touch-icon.png
-favicon32 = "favicon-32x32.png" # favicon-32x32.png
-favicon16 = "favicon-16x16.png" # favicon-16x16.png
+#favicon32 = "favicon-32x32.png" # favicon-32x32.png
+#favicon16 = "favicon-16x16.png" # favicon-16x16.png
 
 icon_search = "svgs search" # Search button in search box.
 icon_adjust = "svgs adjust" # Theme Switcher button in top menu. (add class svgh to change colors on hover)
@@ -170,8 +171,8 @@ icon_top = "svgs svgh angu" # Back to Top Button.
 #    {url = "font/Roboto-Bold.woff2"},
 #]
 
-math = false # katex math js library, used to to render mathematical notations, requires javascript
-math_auto_render = false
+math = true # katex math js library, used to to render mathematical notations, requires javascript
+math_auto_render = true
 
 #katex_css = "https://cdn.jsdelivr.net/npm/katex@0.15.6/dist/katex.min.css" # Fonts - use remote fonts
 #katex_js = "https://cdn.jsdelivr.net/npm/katex@0.15.6/dist/katex.min.js"
