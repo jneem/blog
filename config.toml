@@ -1,5 +1,5 @@
 # do NOT include a trailing slash on the base URL for web urls
-base_url = "https://joe.treeman-ran.ch"
+base_url = "https://treeman-ran.ch"
 
 #base_url = "/home/jieiku/.dev/abridge/public/" # for locally usable build directly from disk, also set in [extra] section uglyurls = true
 title = "A new version"
