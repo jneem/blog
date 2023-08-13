@@ -61,14 +61,17 @@
           src = ./.;
           nativeBuildInputs = [ pkgs.zola ];
           configurePhase = ''
-            mkdir -p "themes/${themeName}"
-            mkdir -p templates
-            mkdir -p static
-            mkdir -p sass
+            mkdir -m 0755 -p "themes/${themeName}"
+            mkdir -m 0755 -p templates
+            mkdir -m 0755 -p sass
+            mkdir -m 0777 -p public
             cp -r ${abridge}/* "themes/${themeName}"
+            chmod -R ug+w themes
             cp -r ${generateTikzPosts}/* .
           '';
-          buildPhase = "zola build";
+          buildPhase = ''
+            zola build
+          '';
           installPhase = "cp -r public $out";
         };
 
