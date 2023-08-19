@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Part 1: Merging and patches"
+title: "Patches, Part 1: Merging and patches"
 ---
 
 A [recent paper](https://arxiv.org/abs/1311.3903) suggested a new mathematical

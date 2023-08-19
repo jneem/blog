@@ -2,10 +2,10 @@ result
 public/
 
 # Generated sources
-content/2017-05-08-merging
-content/2017-05-13-pijul
-content/2019-02-19-cycles
-content/2019-02-25-ids
-content/2019-05-07-pseudo
+content/posts/2017-05-08-merging
+content/posts/2017-05-13-pijul
+content/posts/2019-02-19-cycles
+content/posts/2019-02-25-ids
+content/posts/2019-05-07-pseudo
 
 themes/

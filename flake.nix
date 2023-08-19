@@ -21,25 +21,25 @@
         ];
 
         generatedPosts = [
-          { infile = ./src/merge.md; outfile = "2017-05-08-merging"; }
-          { infile = ./src/pijul.md; outfile = "2017-05-13-pijul"; }
-          { infile = ./src/cycles.md; outfile = "2019-02-19-cycles"; }
-          { infile = ./src/ids.md; outfile = "2019-02-25-ids"; }
-          { infile = ./src/pseudo.md; outfile = "2019-05-07-pseudo"; }
+          { infile = ./tikz-posts/merge.md; outfile = "2017-05-08-merging"; }
+          { infile = ./tikz-posts/pijul.md; outfile = "2017-05-13-pijul"; }
+          { infile = ./tikz-posts/cycles.md; outfile = "2019-02-19-cycles"; }
+          { infile = ./tikz-posts/ids.md; outfile = "2019-02-25-ids"; }
+          { infile = ./tikz-posts/pseudo.md; outfile = "2019-05-07-pseudo"; }
         ];
 
         generateTikzPost = {infile, outfile}: pkgs.stdenv.mkDerivation {
           pname = "jneem-tikz-posts";
           inherit version;
-          src = ./src;
+          src = ./tikz-posts;
           nativeBuildInputs = tikzifyDeps;
           buildPhase = ''
             mkdir -m 0755 -p ${outfile}
             python tikzify.py ${infile} ${outfile}
             '';
           installPhase = ''
-            mkdir -p $out/content
-            cp -rL ${outfile} $out/content/
+            mkdir -p $out/content/posts
+            cp -rL ${outfile} $out/content/posts/
           '';
         };
 

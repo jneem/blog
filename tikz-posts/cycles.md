@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Part 3: Graggles can have cycles"
+title: "Patches, Part 3: Graggles can have cycles"
 ---
 
 Almost two years ago, I promised a series of three posts about version control.
 The first two
-([here](@/2017-05-08-merging/index.md)
-and [here](@/2017-05-13-pijul/index.md))
+([here](@/posts/2017-05-08-merging/index.md)
+and [here](@/posts/2017-05-13-pijul/index.md))
 introduced a new (at the time)
 framework for version control. The third post, which I never finished, was
 going to talk about the datastructures and algorithms used in

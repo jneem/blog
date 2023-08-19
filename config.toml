@@ -2,7 +2,7 @@
 base_url = "https://joe.neeman.me"
 
 #base_url = "/home/jieiku/.dev/abridge/public/" # for locally usable build directly from disk, also set in [extra] section uglyurls = true
-title = "A new version"
+title = ""
 description = ""
 default_language = "en"
 output_dir = "public"
@@ -45,7 +45,7 @@ title_separator = "|"  # Separator between title and title_addition, set as |, -
 # To disable title_addition but keep built in page additions eg, Posts page: "Posts | Abridge" set title_addition to an empty string
 # To always set the page title exactly eg "Abridge" then comment out the below line (not recommend, bad for SEO)
 title_addition = "" # a default value for title addition
-recent = true # TOC / index
+recent = false # TOC / index
 recent_items = 9
 author = "Joe Neeman" # Put Your Name here
 
@@ -72,7 +72,7 @@ foothr = true # show or hide horizontal rule above footer
 
 menu = [
     {url = "/about/", name = "About", slash = true, blank = false},
-    {url = "/", name = "Posts", slash = true, blank = false},
+    {url = "/posts", name = "Blog", slash = true, blank = false},
     {url = "/math/", name = "Math", slash = true, blank = false},
     #{url = "/categories/", name = "Categories", slash = true, blank = false},
     #{url = "/tags/", name = "Tags", slash = true, blank = false},
@@ -111,9 +111,9 @@ js_theme = "theme.min.js" # Separate Always, comment out if using -auto/-light/-
 js_themeButton = "theme_button.js"# Bundleable
 
 ########## Switcher ########## (comment this block out if NOT using switcher):
-stylesheets = [ "abridge-switcher.css" ] # Orange Automatic Dark/Light Theme based on browser/system preference with switcher
+#stylesheets = [ "abridge-switcher.css" ] # Orange Automatic Dark/Light Theme based on browser/system preference with switcher
 #stylesheets = [ "abridge-blue-switcher.css" ] # Blue Automatic Night/Light Theme based on browser/system preference with switcher
-#stylesheets = [ "abridge-blueshade-switcher.css" ] # BlueShade Automatic Night/Light Theme based on browser/system preference with switcher
+stylesheets = [ "abridge-blueshade-switcher.css" ] # BlueShade Automatic Night/Light Theme based on browser/system preference with switcher
 #stylesheets = [ "abridge-switcher.css", "font.css" ] # include your own font!
 #stylesheets = [ "abridge-switcher.css", "iconfont.css" ] # include your own font icons!
 #stylesheets = [ "abridge-switcher.css", "font.css", "iconfont.css" ] # include your own font, and font icons!
