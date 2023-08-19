@@ -2,7 +2,7 @@
 base_url = "https://joe.neeman.me"
 
 #base_url = "/home/jieiku/.dev/abridge/public/" # for locally usable build directly from disk, also set in [extra] section uglyurls = true
-title = ""
+title = "joe.neeman"
 description = ""
 default_language = "en"
 output_dir = "public"
