@@ -14,19 +14,28 @@ Our first hint comes from the pin diagram, on which pin 7 is marked as an `RGB_L
 What's an RGB LED? A google search turned up LEDs with [four pins](https://www.sparkfun.com/products/105): a common ground and then
 one pin for each color. But our RGB LED has only one pin besides the ground, so we must have something different.
 
-Our next hint comes from the schematic, which shows IO 7 connected to something that's labelled `WS2812B-3535`.
-A quick google turns up a [datasheet](ws2812b-spec.pdf) that's pretty useful, if a little cryptic (to me, at least).
+Our next hint comes from our board's [schematics](https://www.wemos.cc/en/latest/_static/files/sch_c3_mini_v2.1.0.pdf),
+which shows IO 7 connected to something that's labelled `WS2812B-3535`.
+
+![The Lolin C3 mini schematic, with the WS2812B-3535 circled](schematic-circled.webp)
+
+A quick google turns up a [datasheet](ws2812b-spec.pdf) that's a little cryptic (to me, at least), but was eventually pretty useful.
 Instead of a mere analog LED,
 it appears we have an "Intelligent control LED integrated light source," which we control using a simple communication
 protocol described in that linked datasheet. The main parts are this:
 
+![A diagram from the WS2812 datasheet](ws_2812_diag1.webp)
+
 which says we need to send 24 bits of color data by transmitting (in big-endian order) a byte of green, a byte of
-red, and then a byte of blue. And then this:
+red, and then a byte of blue. (I'm pretty sure the diagram has three blocks of 24 bits each because it's showing
+how you would transfer data if you had three LEDs wired up in series. We only have one LED, so we just need one
+block of 24 bits, followed by the reset code.) And then this:
+
+![Another diagram from the WS2812 datasheet](ws_2812_diag2.webp)
 
 tells us how to send each bit: a 1 bit is sent by setting the pin high for 850ns and then low for 400ns, and a 0 bit
 is sent by setting the pin high for 400ns and then high for 850ns. After sending all 24 bits, we finish up by setting
-the pin low for 50µs. There's also something in the datasheet about the "cascade method," which I think is for when
-you want to control several LEDs from a single pin. We only have one LED, though.
+the pin low for 50µs.
 
 ## Bit-banging the WS2812
 
@@ -53,7 +62,7 @@ let mut zero = || {
 zero(); zero(); zero(); zero(); zero(); zero(); zero(); zero();
 one(); one(); one(); one(); one(); one(); one(); one();
 zero(); zero(); zero(); zero(); zero(); zero(); zero(); zero();
-// 40µ of "low" to finish.
+// 40µs of "low" to finish.
 delay.delay_us(40);
 ```
 
@@ -91,3 +100,55 @@ And it works! I implemented it [here](https://github.com/jneem/esp-examples/blob
 `cargo run --bin spi` finally gives me a life sign from the onboard LED.
 
 ## The RMT peripheral
+
+I didn't realize when I started, but the `esp32c3-hal` has an example for us after all: it's called
+[`hello_rgb`](https://github.com/esp-rs/esp-hal/blob/0c47ceda3afbc71dc2f540589811257eab51199f/esp32c3-hal/examples/hello_rgb.rs).
+It talks the WS2812's protocol using (by way of the `esp_hal_smartled` crate) the "Remote Control Transceiver (RMT)" peripheral.
+According to [Espressif's documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/api-reference/peripherals/rmt.html),
+the RMT was originally designed as an infrared transceiver (hence the name), but has grown to be
+"a versatile and general-purpose transceiver, transmitting or receiving many other types of signals."
+
+One nice thing about RMT is that it has built-in support for the sort of long-short/short-long pulses we want, without
+needing to fake them: the `esp32c3_hal::rmt` module provides a `PulseCode` struct that can express our protocol
+like this:
+
+```rust
+// The pulse for a 1 bit in WS2812's protocol:
+let one = PulseCode {
+  level1: true,  // Start by setting the pin high...
+  length1: 68,   // for 68 cycles, which is 850ns at the default 80 MHz clock speed.
+  level2: false, // Then set the pin low...
+  length2: 32,   // for 32 cycles, which is 400ns.
+};
+
+let zero = PulseCode { /* similar */ };
+
+// Just zero for 4000 cycles.
+let reset = PulseCode {
+  level1: false,
+  length1: 0,
+  level2: false,
+  length2: 4000,
+};
+```
+
+I wrote a small example [here](https://github.com/jneem/esp-examples/blob/main/blinky/src/bin/rmt.rs)
+that uses the RMT peripheral to talk to our onboard LED. It works just as well as the SPI example.
+
+## Which peripheral should you use?
+
+You can use either the RMT or the SPI peripheral to communicate with the Lolin C3 Mini v2.1.0's onboard LED.
+But which way is better? The honest answer is "I don't know," but here are a few relevant factors:
+- The ESP32-C3 has only one general-purpose SPI controller, according to
+  [this](https://docs.espressif.com/projects/esp-idf/en/v5.1.1/esp32c3/api-reference/peripherals/spi_master.html).
+  So if you need the SPI bus for a non-LED purpose, you'll need to use RMT for the LED.
+  There are [four](https://docs.rs/esp32c3-hal/latest/esp32c3_hal/rmt/index.html) RMT channels, two for sending
+  and two for receiving. So the SPI controller seems to be the more precious resource.
+- The in-memory encoding of the signals is more efficient for SPI: we used four bits in-memory to encode one
+  bit of protocol (we could have made do with three bits but four was easier). The RMT encoding uses a `u32` (four *bytes*)
+  for each bit of protocol. Given that we only 24 bits to send, this discrepency probably doesn't matter.
+  But if we had a lot of LEDs to control, maybe it would make a difference.
+- The SPI method is less "blocking:" there is support (which I might write about later) for async operations
+  on the SPI bus, while the RMT code in `esp-hal` does a [busy loop](https://github.com/esp-rs/esp-hal/blob/2f5ebad9fe9f8f7186a43e16b29e578b22eac47f/esp-hal-common/src/rmt.rs#L337)
+  until sending is complete.
+- The `esp-hal-smartled` crate uses RMT, so you'll need to use RMT also if you want to use their utilities.
