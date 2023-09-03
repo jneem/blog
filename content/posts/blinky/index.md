@@ -1,15 +1,18 @@
 ---
 layout: post
 title: "Blinky"
-date: 2023-08-26
-draft: true
+date: 2023-09-03
 ---
 
 [Last time](@/posts/small-thing/index.md) we left off by failing to get the integrated LED to light up.
-The example in `esp32c3-hal` is pretty simple; the main loop looks just toggles the pin's voltage from
-low to high and back again, one cycle per second.
+We were following the "blinky" example in
+`esp32c3-hal`, which is pretty simple: the main loop looks just toggles the pin's voltage from
+low to high and back again, one cycle per second. There's not much that can go wrong besides choosing the wrong pin,
+and we double-checked that already: pin 7 is the one hooked up to our LED.
 
-Our first hint comes from the pin diagram, on which pin 7 is marked as an `RGB_LED` instead of just a LED.
+![The Lolin C3 mini pin diagram, with pin 7 circled](c3_mini_circled_led.webp)
+
+That pin diagram gives us our first hint for what's gone wrong: pin 7 is marked as an `RGB_LED` instead of just a LED.
 (There's also a [Lolin C3 mini v1.0.0](https://www.wemos.cc/en/latest/c3/c3_mini_1_0_0.html) that has a normal LED, but we're using the v2.1.0.)
 What's an RGB LED? A google search turned up LEDs with [four pins](https://www.sparkfun.com/products/105): a common ground and then
 one pin for each color. But our RGB LED has only one pin besides the ground, so we must have something different.
@@ -19,7 +22,7 @@ which shows IO 7 connected to something that's labelled `WS2812B-3535`.
 
 ![The Lolin C3 mini schematic, with the WS2812B-3535 circled](schematic-circled.webp)
 
-A quick google turns up a [datasheet](ws2812b-spec.pdf) that's a little cryptic (to me, at least), but was eventually pretty useful.
+A quick google turns up a [datasheet](ws2812b-spec.pdf).
 Instead of a mere analog LED,
 it appears we have an "Intelligent control LED integrated light source," which we control using a simple communication
 protocol described in that linked datasheet. The main parts are this:
