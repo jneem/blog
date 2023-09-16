@@ -79,6 +79,7 @@
 
         devShell = pkgs.mkShell {
           packages = with pkgs; [
+            krita
             zola
             generateLocal
           ] ++ tikzifyDeps;
