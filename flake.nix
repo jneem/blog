@@ -82,6 +82,8 @@
             krita
             zola
             generateLocal
+            gnuplot
+            oxipng
           ] ++ tikzifyDeps;
         };
       }
