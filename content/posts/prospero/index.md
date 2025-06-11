@@ -181,7 +181,7 @@ face different tradeoffs with setup time and execution time: we'll have to compi
 a new shader for each simplified expression, so it probably makes sense to do
 bigger batches and less simplification.
 
-[really fast](https://www.mattkeeter.com/projects/fidget/)
+[really fast]: https://www.mattkeeter.com/projects/fidget/
 
 [^process]: I actually started out by trying to write a fast GPU interpreter,
 but it was hard. I may write about some of the issues that I had and the benchmarks
