@@ -73,7 +73,7 @@ detect that it intersects
 with segment C (also reasonable), we might fail to notice that these two *paths* intersect,
 and that's definitely wrong.
 
-![Intersecting paths](intersecting-paths.svg)
+![Intersecting paths](./intersecting-paths.svg)
 
 You can try to fix this by tweaking your intersection-finding code to also report
 almost-intersections, but it can be tricky to *consistently* turn almost-intersections

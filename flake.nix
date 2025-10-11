@@ -55,7 +55,7 @@
         '';
 
         www = { drafts }:
-          let buildArgs = if drafts then "--drafts" else ""; in
+          let buildArgs = if drafts then "--drafts --base-url https://drafts.joe.neeman.me" else ""; in
         pkgs.stdenv.mkDerivation {
           pname = "jneem-website";
           version = "2025-10-10";
