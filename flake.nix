@@ -53,11 +53,12 @@
           cp -rL result/content/* content/
           chmod -R u+w content/
         '';
-      in
-      {
-        packages.default = pkgs.stdenv.mkDerivation {
+
+        www = { drafts }:
+          let buildArgs = if drafts then "--drafts" else ""; in
+        pkgs.stdenv.mkDerivation {
           pname = "jneem-website";
-          version = "2023-08-08";
+          version = "2025-10-10";
           src = ./.;
           nativeBuildInputs = [ pkgs.zola ];
           configurePhase = ''
@@ -70,10 +71,14 @@
             cp -r ${generateTikzPosts}/* .
           '';
           buildPhase = ''
-            zola build
+            zola build ${buildArgs}
           '';
           installPhase = "cp -r public $out";
         };
+      in
+      {
+        packages.default = www { drafts = false; };
+        packages.drafts = www { drafts = true; };
 
         packages.generatedPosts = generateTikzPosts;
 
