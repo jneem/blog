@@ -283,6 +283,10 @@ top rectangular region we'll have to approximate and subdivide. But pretty soon
 and subdivide `A` and `B`. Near the bottom, we'll approximate and subdivide `A`
 and `C` while leaving `B` alone.
 
+# TODO: more on our testing strategies
+
+# TODO: the current status and roadmap
+
 # Acknowledgement
 
 None of this would have been done without the advice and encouragement of the
