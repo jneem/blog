@@ -24,14 +24,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.0078851"
-     inkscape:cx="319.97695"
+     inkscape:cx="320.47304"
      inkscape:cy="498.07265"
      inkscape:window-width="1274"
      inkscape:window-height="1523"
      inkscape:window-x="26"
      inkscape:window-y="23"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     showgrid="false" />
   <defs
      id="defs1">
     <rect
@@ -72,7 +73,7 @@
        d="M 71.50258,43.55522 15.858732,17.20003"
        id="path3" />
     <path
-       style="fill:none;stroke:#646cdc;stroke-width:4;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:none;stroke:#40d24d;stroke-width:4;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round"
        d="M 94.192487,114.65315 71.50258,43.55522"
        id="path2" />
     <text
@@ -103,13 +104,13 @@
          y="18.113417">B</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.9333px;font-family:Inconsolata;-inkscape-font-specification:'Inconsolata, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#646cdc;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.9333px;font-family:Inconsolata;-inkscape-font-specification:'Inconsolata, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#40d24d;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        x="95.029854"
        y="101.33017"
        id="text8"><tspan
          sodipodi:role="line"
          id="tspan8"
-         style="fill:#646cdc;fill-opacity:1;stroke:none;stroke-width:1"
+         style="fill:#40d24d;fill-opacity:1;stroke:none;stroke-width:1"
          x="95.029854"
          y="101.33017">C</tspan></text>
   </g>
