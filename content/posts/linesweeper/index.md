@@ -35,33 +35,46 @@ I think these are all valid reasons, but I want to really focus on the last one.
 The basic ideas aren't too hard to explain: as an example, suppose we want the union
 of two shapes.
 
+![two shapes](shapes_for_union.svg)
+
 The first step is to compute all the intersection points of the shapes' boundaries.
+
+![two shapes with their intersections highlighted](shapes_for_union_with_points.svg)
 
 Then we'll use these intersection points to determine the boundary of the union. Starting
 from the top, we'll "trace" the boundary, keeping the union to our left as we go (either
 way would work, as long as we're consistent).
 
+![two shapes with an arrow showing how we're tracing the boundary](shapes_for_union_tracing_1.svg)
+
 Whenever we get to an intersection point, we turn right. If there are multiple choices, we take
 the right-most one.
 
+![two shapes with an arrow showing how we're tracing the boundary](shapes_for_union_tracing_2.svg)
+
 And that's all! Once we get back to our starting segment, we've traced out the union.
 (Ok, if the original sets had holes then there's some more work to be done to find holes
-in the union. But it's pretty similar to the steps we've already done.)
+in the union. But that's pretty similar to the steps we've already done.)
 
-TODO: explain somehow that once the intersection points are found, the rest is straightforward.
+![two shapes with an arrow showing how we're tracing the boundary](shapes_for_union_tracing_3.svg)
+
+The exact details of the tracing algorithm aren't that important here, but the key takeaway
+is that it's pretty simple once you know two important things: the locations of all
+the intersections of all the boundary segments, and "how" those boundary segments meet there
+(like, what's the clockwise order of the segments at an intersection point).
 
 ## Numerical issues
 
-When you try to implement this, the first step already presents some problems. We like to
+When you actually try to implement this, finding the intersections already presents some problems. We like to
 use floating point numbers for problems like this because they're pretty accurate and very
 fast on modern computers. But floating-point calculations invariably involve approximations
 and they can sometimes be wrong. For example: does the line segment from
 $(0, 0)$ to $(1, 3)$ intersect the line segment from $(2, 2)$ to
 $(0.5, 1.5) + (3, 10) \times 2^{-53}$?
-In fact, they do (because $(0.5, 1.5) + (3, 9) \times 2^{-53}$ lies exactly on
+In fact it does (because $(0.5, 1.5) + (3, 9) \times 2^{-53}$ lies exactly on
 the segment from $(0, 0)$ to $(1, 3)$), but a numerical implementation
-(for example, the one in [kurbo][kurbo-line-intersect])
-might claim that they don't.
+might claim that they don't. (In fact, I came up with this example by exhaustively searching
+for line segment intersections that [kurbo][kurbo-line-intersect] gets wrong.)
 
 [kurbo-line-intersect]: https://docs.rs/kurbo/latest/kurbo/enum.PathSeg.html#method.intersect_line
 
@@ -73,7 +86,7 @@ detect that it intersects
 with segment C (also reasonable), we might fail to notice that these two *paths* intersect,
 and that's definitely wrong.
 
-![Intersecting paths](./intersecting-paths.svg)
+![Intersecting paths](intersecting-paths.svg)
 
 You can try to fix this by tweaking your intersection-finding code to also report
 almost-intersections, but it can be tricky to *consistently* turn almost-intersections
@@ -107,7 +120,7 @@ So what do I want out of this new boolean ops algorithm?
 The big one is this: it should be correct *by design*, while
 avoiding exact math. I want to use inexact floating point
 arithmetic (for speed), and I want our algorithm to be robust
-to rounding errors. 
+to rounding errors.
 
 I also want a reasonably strong definition of correctness. I'll
 allow the algorithm to perturb the input curves (this is unavoidable,
@@ -282,10 +295,6 @@ top rectangular region we'll have to approximate and subdivide. But pretty soon
 `C` moves far away, so in the second rectangular region we'll only approximate
 and subdivide `A` and `B`. Near the bottom, we'll approximate and subdivide `A`
 and `C` while leaving `B` alone.
-
-# TODO: more on our testing strategies
-
-# TODO: the current status and roadmap
 
 # Acknowledgement
 
