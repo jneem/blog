@@ -9,7 +9,7 @@ draft: true
 takes shapes (defined by Bézier curves) as input, and computes their union,
 intersection, or other related operation.
 
-TODO: picture.
+![An example of two overlapping shapes, decomposed into intersection and set differences](logo.svg)
 
 No big deal, really: programs like Illustrator and Inkscape have been able to do
 this for decades, and there are multiple open-source implementations available,
@@ -163,16 +163,31 @@ When a segment enters the sweep line, we insert it at the appropriate index[^dat
 at the neighboring segments to the left and right to see if they intersect with the new segment.
 If so, we make a note of the intersection point so we can handle it when the sweep line passes it.
 
-TODO: picture
+![first-bo-example](bo-entrance.svg)
+
+For example, here the sweep line contains (A, B). Then C enters and we insert it at the
+appropriate place (after B), and we note that it will intersect with C pretty soon (circled
+in black). We don't
+yet compare C with A, though.
+
+When two segments in the sweep line cross one another, we swap their positions
+and then re-check them for intersections with their new neighbors.
+
+![bo-cross-example](bo-cross.svg)
+
+For example, here the sweep line is at the previously-recorded crossing of B and C.
+So we swap their order -- the sweep line goes from (A, B, C, D) to (A, C, B, D).
+Then we compare both B and C against their new neighbors, and make a note that C will
+cross A at some point (circled in black).
 
 When a segment exits the sweep line, we remove it from the sweep line data structure, and then
 we check whether its two neighbors intersect each other (and make a note of the intersection point
 if they do).
 
-TODO: picture
+![bo-exit-example](bo-exit.svg)
 
-Finally, when two segments in the sweep line cross one another, we swap their positions
-and then re-check them for intersections with their new neighbors.
+For example, here both A and B exit at the sweep line. After that, C and D are neighbors
+so we compare them and note that they'll cross one another soon.
 
 The key to this algorithm's efficiency is that for reasonable inputs, it
 avoids comparing most pairs of segments: each segment in the sweep line is only
@@ -185,7 +200,7 @@ The first novel (to me, at least) part of our robust sweep line algorithm is tha
 it comes in two parts: first, we run a sweep line algorithm to determine the ordering
 of all our segments. Only once the ordering is decided do we fix the positions.
 This two-phase split sounds minor, but it makes
-corner cases much simpler. Because whenever you assign positions to segments, you
+corner cases much simpler: whenever you assign positions to segments, you
 perturb them. And whenever you perturb them, you might affect the validity of
 things you've already calculated.[^cautionary example] By looking after the ordering first,
 and then later assigning the positions all at once, you can avoid this problem.
@@ -204,8 +219,10 @@ entrances, exits, and intersections: at height a, the order changed from (A, B) 
 and so we know that C and D entered. At height b, the order changed from (A, B, C, D) to
 (A, C, B, D), so we know that B and C crossed one another. Even though we haven't figured
 out horizontal positions for the various crossings, this is already enough information
-to do the topological part of boolean ops, by which I mean that algorithm at the beginning of
-this post where we traced out the union by following paths and turning right at intersections.
+to do the *topological* part of boolean ops, by which I mean that you can use the algorithm
+at the beginning of this post to figure out that the union of these two shapes
+is traced out by following A down to height d, and then B up to height c, and then C down to the end, and then D up
+to height a, and so on.
 
 They key primitive for the ordering phase is an [algorithm] that takes two (monotonic in y)
 curves and figures out their horizontal order. For each vertical range, the algorithm is
@@ -217,11 +234,20 @@ and then A is to the right after that.
 
 ![order example](order-example.svg)
 
-This pair-wise curve ordering primitive was [proposed] by Raph Levien, and it's an important
-part of our robustness story. Unlike the intersection-finding approach that is usually used,
-it doesn't get confused by near-intersections near the endpoints of segments.
+This pair-wise curve ordering primitive was [proposed] by Raph Levien a couple
+years ago, and it's such an important part of our robustness story that I'll put this
+in bold for the skimmers to see: **the key to robustness is to look for *orderings* instead
+of intersections**. Unlike the
+intersection-finding approach that is usually used, this approach doesn't get confused by
+near-intersections near the endpoints of segments.
 
 [proposed]: https://github.com/linebender/kurbo/pull/258
+
+![Intersecting paths](intersecting-paths.svg)
+
+Like, in this example from before, the ordering approach just says that B starts out to the left of A,
+and then they get close, and then C is close to A, and then C is to A's right. It doesn't even try
+to figure out which of B or C intersects A, because we just don't care.
 
 In order for this primitive to be a useful building block, we impose some requirements. Without getting too
 much into the technical details, if the curves are very close we require that the answer is "close,"
@@ -295,6 +321,18 @@ top rectangular region we'll have to approximate and subdivide. But pretty soon
 `C` moves far away, so in the second rectangular region we'll only approximate
 and subdivide `A` and `B`. Near the bottom, we'll approximate and subdivide `A`
 and `C` while leaving `B` alone.
+
+# Where we're at
+
+The algorithm described above is implemented (in Rust)
+in the [linesweeper](https://github.com/jneem/linesweeper) crate, which recently
+released verson `0.1.0`. That version number probably gives the right idea
+of the implementation's maturity: it should basically work, but there are still
+lots of improvements to be made to correctness, performance, and clarity
+of implementation. But you can give it a try and report issues! If you'd like
+it to run particularly slowly and crash a lot, you can use it with the `slow-asserts`
+feature, which exhaustively checks all the ordering invariants that we're
+supposed to uphold.
 
 # Acknowledgement
 
