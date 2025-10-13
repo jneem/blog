@@ -7,7 +7,7 @@ draft: true
 
 [Linesweeper](https://github.com/jneem/linesweeper) is a library that
 takes shapes (defined by Bézier curves) as input, and computes their union,
-intersection, or other related operation.
+intersection, or other related operation (let's call these operations "boolean ops").
 
 ![An example of two overlapping shapes, decomposed into intersection and set differences](logo.svg)
 
@@ -16,8 +16,8 @@ this for decades, and there are multiple open-source implementations available,
 for example in
 [CGAL](https://doc.cgal.org/latest/Boolean_set_operations_2/index.html#Chapter_2D_Regularized_Boolean_Set-Operations),
 [Paper.js](https://github.com/paperjs/paper.js),
-[lib2geom](https://gitlab.com/inkscape/lib2geom) (as used by Inkscape),
-[Geom2D.CubicBezier] (as used by [Diagrams](https://diagrams.github.io/)).
+[lib2geom](https://gitlab.com/inkscape/lib2geom) (as used by Inkscape), or
+[Geom2D.CubicBezier](https://hackage.haskell.org/package/cubicbezier) (as used by [Diagrams](https://diagrams.github.io/)).
 
 But I had some reasons to try my own thing:
  - None of the existing implementations were easy to use in Rust, and I think there's some
