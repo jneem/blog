@@ -2,7 +2,6 @@
 layout: post
 title: "Linesweeper: a new library for boolean path ops"
 date: 2025-09-23
-draft: true
 ---
 
 [Linesweeper](https://github.com/jneem/linesweeper) is a library that
