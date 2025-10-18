@@ -11,8 +11,9 @@ intersection, or other related operation (let's call these operations "boolean o
 
 ![An example of two overlapping shapes, decomposed into intersection and set differences](logo.svg)
 
-No big deal, really: programs like Illustrator and Inkscape have been able to do
-this for decades, and there are multiple open-source implementations available,
+No big deal, really: this is a super common operation in vector graphics,
+and so programs like Illustrator and Inkscape have been able to do
+it for decades. There are multiple open-source implementations available,
 for example in
 [CGAL](https://doc.cgal.org/latest/Boolean_set_operations_2/index.html#Chapter_2D_Regularized_Boolean_Set-Operations),
 [Paper.js](https://github.com/paperjs/paper.js),
@@ -24,10 +25,10 @@ But I had some reasons to try my own thing:
    demand for a good Rust implementation; it's a popular feature request for kurbo,
    for example.
  - I wanted access to certain low-level operations that aren't exposed by existing packages.
- - Sometimes it's just fun to do something yourself.
  - It's surprisingly hard to do correctly and robustly, and I wanted to try a new approach.
+ - Sometimes it's just fun to do something yourself.
 
-I think these are all valid reasons, but I want to really focus on the last one.
+I think these are all valid reasons, but I want to really focus on the second-last one.
 
 
 # What makes it hard?
@@ -47,7 +48,7 @@ way would work, as long as we're consistent).
 
 ![two shapes with an arrow showing how we're tracing the boundary](shapes_for_union_tracing_1.svg)
 
-Whenever we get to an intersection point, we turn right. If there are multiple choices, we take
+Whenever we get to an intersection point, we turn right. There could be lots of choices; we take
 the right-most one.
 
 ![two shapes with an arrow showing how we're tracing the boundary](shapes_for_union_tracing_2.svg)
@@ -70,17 +71,17 @@ use floating point numbers for problems like this because they're pretty accurat
 fast on modern computers. But floating-point calculations invariably involve approximations
 and they can sometimes be wrong. For example: does the line segment from
 $(0, 0)$ to $(1, 3)$ intersect the line segment from $(2, 2)$ to
-$(0.5, 1.5) + (3, 10) \times 2^{-53}$?
-In fact it does (because $(0.5, 1.5) + (3, 9) \times 2^{-53}$ lies exactly on
-the segment from $(0, 0)$ to $(1, 3)$), but a numerical implementation
-might claim that they don't. (In fact, I came up with this example by exhaustively searching
-for line segment intersections that [kurbo][kurbo-line-intersect] gets wrong.)
+$(0.5, 1.5) + (3, 10) \times 2^{-53}$? It does, in fact, but a numerical
+implementation might claim that it doesn't. (This isn't just hypothetical:
+I came up with this example by exhaustively searching for line segment
+intersections that [kurbo][kurbo-line-intersect] gets wrong.)
 
 [kurbo-line-intersect]: https://docs.rs/kurbo/latest/kurbo/enum.PathSeg.html#method.intersect_line
 
 If you're only comparing individual segments, you might not care: you're doing approximations
 and you got an approximate answer. But when you have a path made up with multiple segments,
-small errors on individual segments can conspire to mess things up on a larger scale. If we fail
+small errors on individual segments can conspire to mess things up on a larger scale.
+In the picture below, if we fail
 to detect that segment A intersects with segment B (which is defensible) and we *also* fail to
 detect that it intersects
 with segment C (also reasonable), we might fail to notice that these two *paths* intersect,
@@ -90,7 +91,7 @@ and that's definitely wrong.
 
 You can try to fix this by tweaking your intersection-finding code to also report
 almost-intersections, but it can be tricky to *consistently* turn almost-intersections
-into intersections across different path segments. For example, in the configuration above,
+into intersections across different path segments. For example, in the picture above,
 it doesn't matter exactly which intersections we detect, but it's important that
 we see the B-C path as crossing the A segment exactly once.
 
@@ -102,9 +103,9 @@ There are a few approaches I know for handling these numerical issues.
   because straight lines between integer endpoints can only intersect at rational coordinates.
   It's more challenging -- but still possible -- to support paths made out of Bézier curves:
   you "just" need to compute with [algebraic numbers](https://en.wikipedia.org/wiki/Algebraic_number).
-  This is the approach used by CGAL. The main disadvantage of exact math is the computational
-  cost of doing exact math. But also, if you want to get the answer out in floating point
-  then you need a rounding step at the end anyway.
+  This is the approach used by CGAL. The main disadvantage of exact math is that
+  it's slow. But also, if you want to get the answer out in floating point then
+  you need a rounding step at the end anyway.
 - Use exact math, but only for *detecting* intersections. This is commonly used for handling
   paths made out of straight lines, because there's an [algorithm][robust orientation]
   for it that's much faster than generic exact arithmetic. I don't know of anyone doing this
@@ -150,7 +151,7 @@ our robust intersection finder, so let's begin with a quick outline of the
 classical algorithm, which was originally described for straight line segments
 using exact arithmetic.
 
-[bentley-ottman]: https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm
+[bentley-ottmann]: https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm
 
 The Bentley-Ottmann algorithm sweeps a horizontal line (the "sweep line") from top to bottom,
 keeping a list (ordered from left to right) of the path segments that cross it.
@@ -261,10 +262,19 @@ Above height a, the comparison *must* say that A is on the left. Within the a re
 it *must* say "close". Within the b region, it can say either "right" or "close", and below b
 it *must* say "right".
 
-Using this approximate pair-wise comparison, we build a sweep line algorithm that guarantees
-approximate ordering: whenever curve A is definitely to the left of curve B according to
-our approximate comparison then it should precede B in the sweep line.
-There are a few tricky parts to the sweep line algorithm, because
+A brief interlude here, to elaborate on why I consider this algorithm correct "by design"
+and how that differs from being correct by trying really hard to handle all corner cases:
+once we have the comparison guarantees above, all of the fuzziness and rounding in the
+floating point calculations is gone from the algorithm. We have our ternary categorization
+("left", "right", or "close") and the rest of the algorithm's logic is based on
+these discrete categories. I think this separation of concerns makes it easier to
+get things right, and also to test that they're right.
+
+Back from the interlude, we use this approximate pair-wise comparison to build
+a sweep line algorithm that guarantees approximate ordering: whenever curve A is
+definitely to the left of curve B according to our approximate comparison then
+it should precede B in the sweep line. There are a few tricky parts to the sweep
+line algorithm, because
 
 - we need the ordering guarantees to hold for *all* pairs of curves in the sweep line,
   not just adjacent pairs of curves; and
